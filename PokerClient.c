@@ -574,11 +574,19 @@ int main(int argc, char *argv[])
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
 
-		//additional info send/rec
-		char *var="HC";//send request for house cards
-		strncpy(SendBuf,var,10);
-		printf("%s: Sending message '%s'...\n", Program, SendBuf);
-		v = write(SocketFD, SendBuf, a);
+		 
+		//SEND/REC ADDITIONAL INFO ABOUT OTHER PLAYERS
+		//send request for house cards
+		varHouseCards();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
             	//END CONNECTION CODE
 		}
  	    
