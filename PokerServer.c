@@ -370,7 +370,7 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer1Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer1Bet, "%d", Player1Bet); //copies char of housecards to output array  
-	strcat(ClientOutput,sNumPlayers);
+	strcat(ClientOutput,sPlayer1Bet);
 	    
 	//sends common cards array to client
 	strncpy(SendBuf, "\nPlayer1's Bet:  \n", sizeof(SendBuf)-1);
@@ -382,7 +382,7 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer2Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer2Bet, "%d", Player2Bet); //copies char of housecards to output array  
-	strcat(ClientOutput,sNumPlayers);
+	strcat(ClientOutput,sPlayer2Bet);
 	    
 	//sends common cards array to client
 	strncpy(SendBuf, "\nPlayer2's Bet:  \n", sizeof(SendBuf)-1);
@@ -394,7 +394,7 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer3Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer3Bet, "%d", Player3Bet); //copies char of housecards to output array  
-	strcat(ClientOutput,sNumPlayers);
+	strcat(ClientOutput,sPlayer3Bet);
 	    
 	//sends common cards array to client
 	strncpy(SendBuf, "\nPlayer3's Bet:  \n", sizeof(SendBuf)-1);
@@ -406,7 +406,7 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer4Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer4Bet, "%d", Player4Bet); //copies char of housecards to output array  
-	strcat(ClientOutput,sNumPlayers);
+	strcat(ClientOutput,sPlayer4Bet);
 	    
 	//sends common cards array to client
 	strncpy(SendBuf, "\nPlayer4's Bet:  \n", sizeof(SendBuf)-1);
@@ -418,7 +418,7 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer5Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer5Bet, "%d", Player5Bet); //copies char of housecards to output array  
-	strcat(ClientOutput,sNumPlayers);
+	strcat(ClientOutput,sPlayer5Bet);
 	    
 	//sends common cards array to client
 	strncpy(SendBuf, "\nPlayer5's Bet:  \n", sizeof(SendBuf)-1);
@@ -672,7 +672,7 @@ void ProcessRequest(		/* process a request by a client */
 
 	strcat(ClientOutput,sPlayerBet); //concatenates common cards and player bet to one char array
 	//sends common cards and player bet concat. array to client
-	strncpy(SendBuf, "\n3Player's Bet:  \n", sizeof(SendBuf)-1);
+	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
 
