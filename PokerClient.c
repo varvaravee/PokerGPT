@@ -70,6 +70,31 @@ void varNumPlayers()
 	char *var="PNUM";
 	strncpy(SendBuf,var,10);
 }
+void var1Bet()
+{
+	char *var="1BET";
+	strncpy(SendBuf,var,10);
+}
+void var2Bet()
+{
+	char *var="2BET";
+	strncpy(SendBuf,var,10);
+}
+void var3Bet()
+{
+	char *var="3BET";
+	strncpy(SendBuf,var,10);
+}
+void var4Bet()
+{
+	char *var="4BET";
+	strncpy(SendBuf,var,10);
+}
+void var5Bet()
+{
+	char *var="5BET";
+	strncpy(SendBuf,var,10);
+}
 
 //end user input button functs
 
