@@ -272,6 +272,19 @@ void ProcessRequest(		/* process a request by a client */
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
     }
 	
+    else if (0 == strcmp(RecvBuf, "PNUM"))
+    {
+	char ClientOutput[100]; //placeholder var to hold output to client
+	char sNumPlayers[10];//char ptr that holds the house cards 
+	sprintf(sNumPlayers, "%d", NumPlayers); //copies char of housecards to output array  
+	strcat(ClientOutput,sNumPlayers);
+	    
+	//sends common cards array to client
+	strncpy(SendBuf, "\nCurrent Turn:  \n", sizeof(SendBuf)-1);
+	SendBuf[sizeof(SendBuf)-1] = 0;
+	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+    }
+	
     else if (0 == strcmp(RecvBuf, "SHUTDOWN"))
     {   PlayerBet=0;
 	Shutdown = 1;
