@@ -49,6 +49,28 @@ void varFold()
 	char *var="FOLD";
 	strncpy(SendBuf,var,10);
 }
+void varTurn()
+{
+	char *var="TURN";
+	strncpy(SendBuf,var,10);
+}
+
+void varHouseCards()
+{
+	char *var="HCARDS";
+	strncpy(SendBuf,var,10);
+}
+void varTurn()
+{
+	char *var="TURN";
+	strncpy(SendBuf,var,10);
+}
+void varNumPlayers()
+{
+	char *var="PNUM";
+	strncpy(SendBuf,var,10);
+}
+
 //end user input button functs
 
 
