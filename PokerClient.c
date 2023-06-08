@@ -49,6 +49,14 @@ void varFold()
 	char *var="FOLD";
 	strncpy(SendBuf,var,10);
 }
+void varAllin()
+{
+	char *var="ALLIN";
+	strncpy(SendBuf,var,10);
+}
+
+
+//additional info sent to client
 void varTurn()
 {
 	char *var="TURN";
@@ -60,17 +68,20 @@ void varHouseCards()
 	char *var="HCARDS";
 	strncpy(SendBuf,var,10);
 }
-void varTurn()
-{
-	char *var="TURN";
-	strncpy(SendBuf,var,10);
-}
+
 void varNumPlayers()
 {
 	char *var="PNUM";
 	strncpy(SendBuf,var,10);
 }
+void varPot()
+{
+	char *var="POT";
+	strncpy(SendBuf,var,10);
+}
 
+
+//other player's info send to client
 
 void var1Bet()
 {
@@ -98,11 +109,7 @@ void var5Bet()
 	strncpy(SendBuf,var,10);
 }
 
-void varPot()
-{
-	char *var="POT";
-	strncpy(SendBuf,var,10);
-}
+
 
 void var1Bank()
 {
@@ -574,7 +581,7 @@ int main(int argc, char *argv[])
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
 
-		 
+		//*******************************************
 		//SEND/REC ADDITIONAL INFO ABOUT OTHER PLAYERS
 		//send request for house cards
 		varHouseCards();
@@ -587,6 +594,225 @@ int main(int argc, char *argv[])
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
 	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+	        //send request for current turn
+	        varTurn();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+		//send request for number of players
+		varNumPlayers();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+		//send request for pot
+		varPot();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+	       
+		 //player info
+		var1Bet();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+		var2Bet();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		var3Bet();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		var4Bet();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		var5Bet();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		
+		var1Bank();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+		var2Bank();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		 
+		var3Bank();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		var4Bank();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		var5Bank();
+		x = strlen(SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+		 
+		 
             	//END CONNECTION CODE
 		}
  	    
