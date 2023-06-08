@@ -234,30 +234,44 @@ void ProcessRequest(		/* process a request by a client */
 	char ClientOutput[100]; //placeholder var to hold output to client
 	char *placeholderP=CardsPlayer(P); //char ptr that holds player hand
 	strcpy(ClientOutput,placeholderP); //copies char of player hand to array
-
-	strcat(ClientOutput," | "); //separates player cards from turn
 	
 	//starts turn 
 	turn+=1;
-	char sTurn[10];//creates char array to hold turn number
-	sprintf(sTurn, "%d", turn); //converts int turn to char array turn
-	strcat(ClientOutput,sTurn); //copies char of turn to output array
-
 	strcat(ClientOutput," | "); //separates turn from player bet
 	strcat(ClientOutput,sPlayerBet); //concatenates common cards and player bet to one char array
-	strcat(ClientOutput," | "); //separates bet from turn 
+	
 
-
-	strcat(ClientOutput," | "); //separates player bet from housecards
-	char *placeholderH=CardsHouse(H);//char ptr that holds the house cards 
-	strcat(ClientOutput,placeholderH); //copies char of housecards to output array
-
-	//sends common cards and player bet concat. array to client
-	strncpy(SendBuf, "\nPlayer's Hand | Turn | Player's Bet | House Cards:  \n", sizeof(SendBuf)-1);
+	//sends player's hand and player bet concat. array to client
+	strncpy(SendBuf, "\nPlayer's Hand | Player's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
 
+    }	
+    else if (0 == strcmp(RecvBuf, "HCARDS"))
+    {
+	char ClientOutput[100]; //placeholder var to hold output to client
+	char *placeholderH=CardsHouse(H);//char ptr that holds the house cards 
+	strcat(ClientOutput,placeholderH); //copies char of housecards to output array  
+	    
+	//sends common cards array to client
+	strncpy(SendBuf, "\nHouse Cards:  \n", sizeof(SendBuf)-1);
+	SendBuf[sizeof(SendBuf)-1] = 0;
+	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
     }
+	
+    else if (0 == strcmp(RecvBuf, "TURN"))
+    {
+	char ClientOutput[100]; //placeholder var to hold output to client
+	char sTurn[10];//char ptr that holds the house cards 
+	sprintf(sTurn, "%d", turn); //copies char of housecards to output array  
+	strcat(ClientOutput,sTurn);
+	    
+	//sends common cards array to client
+	strncpy(SendBuf, "\nCurrent Turn:  \n", sizeof(SendBuf)-1);
+	SendBuf[sizeof(SendBuf)-1] = 0;
+	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+    }
+	
     else if (0 == strcmp(RecvBuf, "SHUTDOWN"))
     {   PlayerBet=0;
 	Shutdown = 1;
@@ -304,13 +318,8 @@ void ProcessRequest(		/* process a request by a client */
 
 	char sPlayerBet[10]; //creates char array to hold player bet
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
-
-	
 	char ClientOutput[100]; //placeholder var to hold output to client
-	char *placeholderP=CardsPlayer(P); //char ptr that holds player hand
-	strcpy(ClientOutput,placeholderP); //copies char of player hand to array
 
-	strcat(ClientOutput," | "); //separates player cards from turn
 
 	//control turn 
 	if (turn==NumPlayers)
@@ -321,21 +330,9 @@ void ProcessRequest(		/* process a request by a client */
 		turn+=1;
 
 	
-	char sTurn[10];//creates char array to hold turn number
-	sprintf(sTurn, "%d", turn); //converts int turn to char array turn
-	strcat(ClientOutput,sTurn); //copies char of turn to output array
+	strcat(ClientOutput,sPlayerBet); //concatenates player bet into client output
 
-	strcat(ClientOutput," | "); //separates turn from player bet
-	strcat(ClientOutput,sPlayerBet); //concatenates common cards and player bet to one char array
-	strcat(ClientOutput," | "); //separates bet from turn 
-
-
-	strcat(ClientOutput," | "); //separates player bet from housecards
-	char *placeholderH=CardsHouse(H);//char ptr that holds the house cards 
-	strcat(ClientOutput,placeholderH); //copies char of housecards to output array
-
-	//sends common cards and player bet concat. array to client
-	strncpy(SendBuf, "\nPlayer's Hand | Turn | Player's Bet | House Cards:  \n", sizeof(SendBuf)-1);
+	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
 
