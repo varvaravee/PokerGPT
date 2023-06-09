@@ -580,12 +580,29 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
 
 		//*******************************************
 		//SEND/REC ADDITIONAL INFO ABOUT OTHER PLAYERS
 		//send request for house cards
 		varHouseCards();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -599,10 +616,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
 		 
 	        //send request for current turn
 	        varTurn();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -616,10 +650,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
 		 
 		//send request for number of players
 		varNumPlayers();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -633,10 +684,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
 		 
 		//send request for pot
 		varPot();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -650,10 +718,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
 	       
-		 //player info
+		//player info
 		var1Bet();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -667,9 +752,26 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
-		 
+		}
+
 		var2Bet();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -682,10 +784,29 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
+ 
 		 
 		var3Bet();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -698,10 +819,28 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
 		 
 		var4Bet();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -714,10 +853,29 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
-		 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
+		
+
 		var5Bet();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -731,9 +889,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
-		
+		}
+
+
 		var1Bank();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -747,9 +923,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
 		 
 		var2Bank();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -763,9 +957,27 @@ int main(int argc, char *argv[])
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
-		 
+		}
+
+
 		var3Bank();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -778,10 +990,28 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
-		 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
+
 		var4Bank();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -794,10 +1024,28 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
-		 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		}
+
+
 		var5Bank();
 		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		    if (SocketFD < 0)
+	 	   {   FatalError("socket creation failed");
+	 	   }
+	   	 printf("%s: Connecting to the server at port %d...\n",
+				Program, PortNo);
+	    	//establish connection
+	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+				sizeof(ServerAddress)) < 0)
+	   	 {   FatalError("connecting to server failed");
+	   	 }
+	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -810,18 +1058,18 @@ int main(int argc, char *argv[])
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
-	    	printf("%s: Received response: %s\n", Program, RecvBuf); 
-		 
-		 
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+
             	//END CONNECTION CODE
 		}
+	}
  	    
 #ifdef DEBUG
 	    printf("%s: Closing the connection...\n", Program);
 #endif
 	    close(SocketFD);
 	}
-	}
+	
     } while(0 != strcmp("SHUTDOWN", SendBuf));
     printf("%s: Exiting...\n", Program);
     return 0;
