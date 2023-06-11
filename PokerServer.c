@@ -204,7 +204,7 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBet=Player1Bet;
 		CurrentBet=Player1Bet;
 		Give2Cards(D, C, P1);
-		placeholderP=CardsPlayer(P1); //char ptr that holds player hand
+		//placeholderP=CardsPlayer(P1); //char ptr that holds player hand
 
 	}
 	else if (NumPlayers==2)
@@ -215,7 +215,7 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBet=Player2Bet;
 		CurrentBet=Player2Bet;
 		Give2Cards(D, C, P2);
-		placeholderP=CardsPlayer(P2); //char ptr that holds player hand
+		//placeholderP=CardsPlayer(P2); //char ptr that holds player hand
 
 	}
 	else if (NumPlayers==3)
@@ -226,7 +226,7 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBet=Player3Bet;
 		CurrentBet=Player3Bet;
 		Give2Cards(D, C, P3);
-		placeholderP=CardsPlayer(P3); //char ptr that holds player hand
+		//placeholderP=CardsPlayer(P3); //char ptr that holds player hand
 
 	}
 	else if (NumPlayers==4)
@@ -237,7 +237,7 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBet=Player4Bet;
 		CurrentBet=Player4Bet;
 		Give2Cards(D, C, P4);
-		placeholderP=CardsPlayer(P4); //char ptr that holds player hand
+		//placeholderP=CardsPlayer(P4); //char ptr that holds player hand
 
 	}
 	else if (NumPlayers==5)
@@ -248,7 +248,7 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBet=Player5Bet;
 		CurrentBet=Player5Bet;
 		Give2Cards(D, C, P5);
-		placeholderP=CardsPlayer(P5); //char ptr that holds player hand
+		//placeholderP=CardsPlayer(P5); //char ptr that holds player hand
 
 	}
 
