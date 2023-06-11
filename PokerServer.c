@@ -41,9 +41,13 @@ int P2Bank=1000;
 int P3Bank=1000;
 int P4Bank=1000;
 int P5Bank=1000;
+int PlayerBank=0;
 int pot=0;
+int difference=0;
+int startingBet=0;
 
 int turn=0;
+int cardsGiven=0;
 
 int CurrentBet=0;
 //number of players
@@ -53,7 +57,9 @@ int NumPlayers=0;
  DECK D;
  DECK C;
  HouseDECK H;
- PlayerDECK P;
+ PlayerDECK P1,P2,P3,P4,P5;
+
+
 
 /*** global functions ****************************************************/
 
@@ -72,12 +78,12 @@ void FatalError(		/* print error diagnostics and abort */
 int MakeServerSocket(		/* create a socket on this server */
 	uint16_t PortNo)
 {
-	 //generate decks
-   	  StartCards(D, C, H);
-    	  //generate house cards
-    	  HouseStarter(D, C, H);
-    
+	//generate decks
+	StartCards(D, C, H);
+	//generate house cards
+	HouseStarter(D, C, H);
 
+   
     int ServSocketFD;
     struct sockaddr_in ServSocketName;
 
@@ -166,9 +172,15 @@ void DisplayPlayer5Bet() //display player's bet
 void ProcessRequest(		/* process a request by a client */
 	int DataSocketFD)
 {
+
     int  l, n;
     char RecvBuf[256];	/* message buffer for receiving a message */
     char SendBuf[256];	/* message buffer for sending a response */
+    char ClientOutput[100];
+
+    memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
+    memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+    memset(ClientOutput,0,sizeof(ClientOutput)); //clear client output
 
     n = read(DataSocketFD, RecvBuf, sizeof(RecvBuf)-1);
     if (n < 0) 
@@ -182,6 +194,7 @@ void ProcessRequest(		/* process a request by a client */
     if (0 == strcmp(RecvBuf, "POKER"))
     {   
 	NumPlayers+=1;
+	char *placeholderP="";
 	
 	if(NumPlayers==1)
 	{
@@ -190,6 +203,9 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBank=P1Bank;
 		PlayerBet=Player1Bet;
 		CurrentBet=Player1Bet;
+		Give2Cards(D, C, P1);
+		placeholderP=CardsPlayer(P1); //char ptr that holds player hand
+
 	}
 	else if (NumPlayers==2)
 	{
@@ -198,6 +214,9 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBank=P2Bank;
 		PlayerBet=Player2Bet;
 		CurrentBet=Player2Bet;
+		Give2Cards(D, C, P2);
+		placeholderP=CardsPlayer(P2); //char ptr that holds player hand
+
 	}
 	else if (NumPlayers==3)
 	{
@@ -206,6 +225,9 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBank=P3Bank;
 		PlayerBet=Player3Bet;
 		CurrentBet=Player3Bet;
+		Give2Cards(D, C, P3);
+		placeholderP=CardsPlayer(P3); //char ptr that holds player hand
+
 	}
 	else if (NumPlayers==4)
 	{
@@ -214,6 +236,9 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBank=P4Bank;
 		PlayerBet=Player4Bet;
 		CurrentBet=Player4Bet;
+		Give2Cards(D, C, P4);
+		placeholderP=CardsPlayer(P4); //char ptr that holds player hand
+
 	}
 	else if (NumPlayers==5)
 	{
@@ -222,34 +247,45 @@ void ProcessRequest(		/* process a request by a client */
 		PlayerBank=P5Bank;
 		PlayerBet=Player5Bet;
 		CurrentBet=Player5Bet;
+		Give2Cards(D, C, P5);
+		placeholderP=CardsPlayer(P5); //char ptr that holds player hand
+
 	}
 
-
+	fflush(stdout);
 	
-	Give2Cards(D, C, P);
+	
 	char sPlayerBet[10]; //creates char array to hold player bet
+	memset(sPlayerBet,0,sizeof(sPlayerBet));
+
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
 
 	
-	char ClientOutput[100]; //placeholder var to hold output to client
-	char *placeholderP=CardsPlayer(P); //char ptr that holds player hand
-	strcpy(ClientOutput,placeholderP); //copies char of player hand to array
+	//char ClientOutput[100]; //placeholder var to hold output to client
+	//char *placeholderP=CardsPlayer(P); //char ptr that holds player hand
+	//strcpy(ClientOutput,placeholderP); //copies char of player hand to array
 	
-	//starts turn 
-	turn+=1;
-	strcat(ClientOutput," | "); //separates turn from player bet
+	if (turn == 0)
+		turn+=1;
+
+	//strcat(ClientOutput," | "); //separates turn from player bet
 	strcat(ClientOutput,sPlayerBet); //concatenates common cards and player bet to one char array
 	
 
 	//sends player's hand and player bet concat. array to client
-	strncpy(SendBuf, "\nPlayer's Hand | Player's Bet:  \n", sizeof(SendBuf)-1);
+	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	printf("%s\n",ClientOutput);
+	
+
 
     }	
     else if (0 == strcmp(RecvBuf, "HCARDS"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char *placeholderH=CardsHouse(H);//char ptr that holds the house cards 
 	strcat(ClientOutput,placeholderH); //copies char of housecards to output array  
 	    
@@ -257,11 +293,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nHouse Cards:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+
     }
 	
     else if (0 == strcmp(RecvBuf, "TURN"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sTurn[10];//char ptr that holds the house cards 
 	sprintf(sTurn, "%d", turn); //copies char of housecards to output array  
 	strcat(ClientOutput,sTurn);
@@ -270,11 +309,15 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nCurrent Turn:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+
+
     }
 	
     else if (0 == strcmp(RecvBuf, "PNUM"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sNumPlayers[10];//char ptr that holds the house cards 
 	sprintf(sNumPlayers, "%d", NumPlayers); //copies char of housecards to output array  
 	strcat(ClientOutput,sNumPlayers);
@@ -283,11 +326,15 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nNumber of Players:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+
+
     }
     else if (0 == strcmp(RecvBuf, "POT"))
     {
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
 	pot=Player1Bet+Player2Bet+Player3Bet+Player4Bet+Player5Bet;
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPot[10];//char ptr that holds the house cards 
 	sprintf(sPot, "%d", pot); //copies char of housecards to output array  
 	strcat(ClientOutput,sPot);
@@ -296,6 +343,7 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nCurrent Pot:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+
     }
 	
 	
@@ -303,7 +351,9 @@ void ProcessRequest(		/* process a request by a client */
     //SENDS PLAYER'S BANKS TO CLIENTS
     else if (0 == strcmp(RecvBuf, "1BANK"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sP1Bank[10];//char ptr that holds the house cards 
 	sprintf(sP1Bank, "%d", P1Bank); //copies char of housecards to output array  
 	strcat(ClientOutput,sP1Bank);
@@ -312,10 +362,13 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer1's Bank:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
     }
     else if (0 == strcmp(RecvBuf, "2BANK"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sP2Bank[10];//char ptr that holds the house cards 
 	sprintf(sP2Bank, "%d", P2Bank); //copies char of housecards to output array  
 	strcat(ClientOutput,sP2Bank);
@@ -324,10 +377,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer2's Bank:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
     else if (0 == strcmp(RecvBuf, "3BANK"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sP3Bank[10];//char ptr that holds the house cards 
 	sprintf(sP3Bank, "%d", P3Bank); //copies char of housecards to output array  
 	strcat(ClientOutput,sP3Bank);
@@ -336,10 +393,13 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer3's Bank:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
     }
     else if (0 == strcmp(RecvBuf, "4BANK"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sP4Bank[10];//char ptr that holds the house cards 
 	sprintf(sP4Bank, "%d", P4Bank); //copies char of housecards to output array  
 	strcat(ClientOutput,sP4Bank);
@@ -348,10 +408,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer4's Bank:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
     else if (0 == strcmp(RecvBuf, "5BANK"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sP5Bank[10];//char ptr that holds the house cards 
 	sprintf(sP5Bank, "%d", P5Bank); //copies char of housecards to output array  
 	strcat(ClientOutput,sP5Bank);
@@ -360,6 +424,8 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer5's Bank:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
 	
 	
@@ -367,8 +433,11 @@ void ProcessRequest(		/* process a request by a client */
     //SENDS BETS TO CLIENT
     else if (0 == strcmp(RecvBuf, "1BET"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer1Bet[10];//char ptr that holds the house cards 
+	
 	sprintf(sPlayer1Bet, "%d", Player1Bet); //copies char of housecards to output array  
 	strcat(ClientOutput,sPlayer1Bet);
 	    
@@ -376,10 +445,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer1's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
     else if (0 == strcmp(RecvBuf, "2BET"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer2Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer2Bet, "%d", Player2Bet); //copies char of housecards to output array  
 	strcat(ClientOutput,sPlayer2Bet);
@@ -388,10 +461,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer2's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
     else if (0 == strcmp(RecvBuf, "3BET"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer3Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer3Bet, "%d", Player3Bet); //copies char of housecards to output array  
 	strcat(ClientOutput,sPlayer3Bet);
@@ -400,10 +477,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer3's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }	
     else if (0 == strcmp(RecvBuf, "4BET"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer4Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer4Bet, "%d", Player4Bet); //copies char of housecards to output array  
 	strcat(ClientOutput,sPlayer4Bet);
@@ -412,10 +493,14 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer4's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
     else if (0 == strcmp(RecvBuf, "5BET"))
     {
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	char sPlayer5Bet[10];//char ptr that holds the house cards 
 	sprintf(sPlayer5Bet, "%d", Player5Bet); //copies char of housecards to output array  
 	strcat(ClientOutput,sPlayer5Bet);
@@ -424,6 +509,8 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer5's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	
+
     }
 //END OF BETS TO CLIENT
 	
@@ -441,48 +528,56 @@ void ProcessRequest(		/* process a request by a client */
     {
 	if (turn==1)
 	{
+		difference=CurrentBet-Player1Bet;
 		Player1Bet=CurrentBet;
-		P1Bank-=Player1Bet;
+		P1Bank-=difference;
 		PlayerBank=P1Bank;
 		PlayerBet=Player1Bet;
 	}
 	else if (turn==2)
 	{
+		difference=CurrentBet-Player2Bet;
 		Player2Bet=CurrentBet;
-		P2Bank-=Player2Bet;
+		P2Bank-=difference;
 		PlayerBank=P2Bank;
 		PlayerBet=Player2Bet;
 	}
 	else if (turn==3)
 	{
+		difference=CurrentBet-Player3Bet;
 		Player3Bet=CurrentBet;
-		P3Bank-=Player3Bet;
+		P3Bank-=difference;
 		PlayerBank=P3Bank;
 		PlayerBet=Player3Bet;
 	}
 	else if (turn==4)
 	{
+		difference=CurrentBet-Player4Bet;
 		Player4Bet=CurrentBet;
-		P4Bank-=Player4Bet;
+		P4Bank-=difference;
 		PlayerBank=P4Bank;
 		PlayerBet=Player4Bet;
 	}
-	else if (turn==5)
+	else
 	{
+		difference=CurrentBet-Player5Bet;
 		Player5Bet=CurrentBet;
-		P5Bank-=Player5Bet;
+		P5Bank-=difference;
 		PlayerBank=P5Bank;
 		PlayerBet=Player5Bet;
 	}
-
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
 	char sPlayerBet[10]; //creates char array to hold player bet
+	memset(sPlayerBet,0,sizeof(sPlayerBet));
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//char ClientOutput[100]; //placeholder var to hold output to client
 
 
 	//control turn 
 	if (turn==NumPlayers)
-	{
+	{	
+		Give1CardtoHouse(D, C, H);
+		cardsGiven+=1; //update cards given var
 		turn=1;
 	}
 	else 
@@ -493,6 +588,8 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+
 
 
     }
@@ -500,48 +597,53 @@ void ProcessRequest(		/* process a request by a client */
     {
 	if (turn==1)
 	{
-		Player1Bet=P1Bank;
-		P1Bank-=Player1Bet;
+		Player1Bet+=P1Bank;
+		P1Bank=0;
 		PlayerBank=P1Bank;
 		PlayerBet=Player1Bet;
 	}
 	else if (turn==2)
 	{
-		Player2Bet=P2Bank;
-		P2Bank-=Player2Bet;
+		Player2Bet+=P2Bank;
+		P2Bank=0;
 		PlayerBank=P2Bank;
 		PlayerBet=Player2Bet;
 	}
 	else if (turn==3)
 	{
-		Player3Bet=P3Bank;
-		P3Bank-=Player3Bet;
+		Player3Bet+=P3Bank;
+		P3Bank=0;
 		PlayerBank=P3Bank;
 		PlayerBet=Player3Bet;
 	}
 	else if (turn==4)
 	{
-		Player4Bet=P4Bank;
-		P4Bank-=Player4Bet;
+		Player4Bet+=P4Bank;
+		P4Bank=0;
 		PlayerBank=P4Bank;
 		PlayerBet=Player4Bet;
 	}
-	else if (turn==5)
+	else
 	{
-		Player5Bet=P5Bank;
-		P5Bank-=Player5Bet;
+		Player5Bet+=P5Bank;
+		P5Bank=0;
 		PlayerBank=P5Bank;
 		PlayerBet=Player5Bet;
 
 	}
+	
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
 
 	char sPlayerBet[10]; //creates char array to hold player bet
+	memset(sPlayerBet,0,sizeof(sPlayerBet));
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//char ClientOutput[100]; //placeholder var to hold output to client
 
 	//control turn 
 	if (turn==NumPlayers)
 	{
+		Give1CardtoHouse(D, C, H);
+		cardsGiven+=1; //update cards given var
 		turn=1;
 	}
 	else 
@@ -552,6 +654,8 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+
 
 
     }
@@ -561,59 +665,73 @@ void ProcessRequest(		/* process a request by a client */
     {
 	if (turn==1)
 	{
+		startingBet=Player1Bet;
 		Player1Bet+=10;
-		P1Bank-=Player1Bet;
+		difference=Player1Bet-startingBet;
+		P1Bank-=difference;
 		PlayerBank=P1Bank;
 		PlayerBet=Player1Bet;
 	}
 	else if (turn==2)
 	{
-		Player2Bet+=10;	
-		P2Bank-=Player2Bet;
+		startingBet=Player2Bet;
+		Player2Bet+=10;
+		difference=Player2Bet-startingBet;
+		P2Bank-=difference;
 		PlayerBank=P2Bank;	
 		PlayerBet=Player2Bet;
 	}
 	else if (turn==3)
 	{
+		startingBet=Player3Bet;
 		Player3Bet+=10;
-		P3Bank-=Player3Bet;
+		difference=Player3Bet-startingBet;
+		P3Bank-=difference;
 		PlayerBank=P3Bank;
 		PlayerBet=Player3Bet;
 	}
 	else if (turn==4)
 	{
+		startingBet=Player4Bet;
 		Player4Bet+=10;
-		P4Bank-=Player4Bet;
+		difference=Player4Bet-startingBet;
+		P4Bank-=difference;
 		PlayerBank=P4Bank;
 		PlayerBet=Player4Bet;
 	}
-	else if (turn==5)
+	else
 	{
+		startingBet=Player5Bet;
 		Player5Bet+=10;
-		P5Bank-=Player5Bet;
+		difference=Player5Bet-startingBet;
+		P1Bank-=difference;
 		PlayerBank=P5Bank;
 		PlayerBet=Player5Bet;
 	}
-
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
 	CurrentBet=PlayerBet;
 	char sPlayerBet[10]; //creates char array to hold player bet
+	memset(sPlayerBet,0,sizeof(sPlayerBet));
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//char ClientOutput[100]; //placeholder var to hold output to client
 	
 
 	//control turn 
 	if (turn==NumPlayers)
 	{
+		Give1CardtoHouse(D, C, H);
+		cardsGiven+=1; //update cards given var
 		turn=1;
 	}
 	else 
 		turn+=1;
 
 	strcat(ClientOutput,sPlayerBet); //concatenates common cards and player bet to one char array
-	//sends common cards and player bet concat. array to client
 	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+
 	
 
 
@@ -623,48 +741,55 @@ void ProcessRequest(		/* process a request by a client */
 
 	if (turn==1)
 	{
+		difference=CurrentBet-Player1Bet;
 		Player1Bet=CurrentBet;
-		P1Bank-=Player1Bet;
+		P1Bank-=difference;
 		PlayerBank=P1Bank;
 		PlayerBet=Player1Bet;
 	}
 	else if (turn==2)
 	{
+		difference=CurrentBet-Player2Bet;
 		Player2Bet=CurrentBet;
-		P2Bank-=Player2Bet;
+		P2Bank-=difference;
 		PlayerBank=P2Bank;
 		PlayerBet=Player2Bet;
 	}
 	else if (turn==3)
 	{
+		difference=CurrentBet-Player3Bet;
 		Player3Bet=CurrentBet;
-		P3Bank-=Player3Bet;
+		P3Bank-=difference;
 		PlayerBank=P3Bank;
 		PlayerBet=Player3Bet;
 	}
 	else if (turn==4)
 	{
+		difference=CurrentBet-Player4Bet;
 		Player4Bet=CurrentBet;
-		P4Bank-=Player4Bet;
+		P4Bank-=difference;
 		PlayerBank=P4Bank;
 		PlayerBet=Player4Bet;
 	}
-	else if (turn==5)
+	else
 	{
+		difference=CurrentBet-Player5Bet;
 		Player5Bet=CurrentBet;
-		P5Bank-=Player5Bet;
+		P5Bank-=difference;
 		PlayerBank=P5Bank;
 		PlayerBet=Player5Bet;
 	}
-	
-
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
 	char sPlayerBet[10]; //creates char array to hold player bet
+	memset(sPlayerBet,0,sizeof(sPlayerBet));
 	sprintf(sPlayerBet, "%d", PlayerBet); //converts int bet to char array bet
-	char ClientOutput[100]; //placeholder var to hold output to client
+	//char ClientOutput[100]; //placeholder var to hold output to client
 
 	//control turn 
 	if (turn==NumPlayers)
 	{
+		Give1CardtoHouse(D, C, H);
+		cardsGiven+=1; //update cards given var
 		turn=1;
 	}
 	else 
@@ -675,6 +800,8 @@ void ProcessRequest(		/* process a request by a client */
 	strncpy(SendBuf, "\nPlayer's Bet:  \n", sizeof(SendBuf)-1);
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+
 
 
     }
@@ -683,11 +810,13 @@ void ProcessRequest(		/* process a request by a client */
 	SendBuf[sizeof(SendBuf)-1] = 0;
 	strncat(SendBuf, RecvBuf, sizeof(SendBuf)-1-strlen(SendBuf));
     }
+   
     l = strlen(SendBuf);
 #ifdef DEBUG
     printf("%s: Sending response: %s.\n", Program, SendBuf);
 #endif
     n = write(DataSocketFD, SendBuf, l);
+   
     if (n < 0)
     {   FatalError("writing to data socket failed");
     }
@@ -764,11 +893,7 @@ void ServerMainLoop(		/* simple server main loop */
 			printf("%s: Dealing with client %d...\n", Program, i);
 #endif
 			ProcessRequest(i);
-#ifdef DEBUG
-			printf("%s: Closing client %d connection.\n", Program, i);
-#endif
-			close(i);
-			FD_CLR(i, &ActiveFDs);
+
 		    }
 		}
 	    }
