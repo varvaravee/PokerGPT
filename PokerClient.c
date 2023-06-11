@@ -555,10 +555,12 @@ char P5Bank[5]="";
 	    printf("%s: Received response: %s\n", Program, RecvBuf);
 	    memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
             //END CONNECTION CODE
-	 	//send player hand 
+	 	
+		
+		//send player hand 
 	 	varPlayerHand();
-		length=sizeof(HouseCards)-1;//calculate length of array
-		memset(HouseCards, 0, length); //set all bytes in array to 0
+		length=sizeof(PlayerHand)-1;//calculate length of array
+		memset(PlayerHand, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
@@ -578,7 +580,7 @@ char P5Bank[5]="";
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
-		strcat(HouseCards,RecvBuf);
+		strcat(PlayerHand,RecvBuf);
 		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 		
