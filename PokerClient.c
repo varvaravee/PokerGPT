@@ -8,9 +8,10 @@
 #include <netdb.h>
 
 char SendBuf[256];	/* message buffer for sending a message */
-//int turnC=0;
-//int NumPlayersC=0;
-
+//variables to hold rec buffer message
+int length;
+/*
+*/
 //main menu user input button functions 
 void varGame()
 {
@@ -27,7 +28,11 @@ void varShut() //closing server
 	char *var="SHUTDOWN";
 	strncpy(SendBuf,var,10);
 }
-
+void varGarbage() //send buff test 
+{
+	char *var="GARBAGE";
+	strncpy(SendBuf,var,10);
+}
 //turn menu button functions
 void varCall()
 {
@@ -440,6 +445,21 @@ int main(int argc, char *argv[])
 
 
 
+char Turn[5]="";
+char HouseCards[25]="";
+char PlayerHand[10]="";
+char NumPlayers[5]="";
+char Pot[10]="";
+char P1Bet[5]="";
+char P2Bet[5]="";
+char P3Bet[5]="";
+char P4Bet[5]="";
+char P5Bet[5]="";
+char P1Bank[5]="";
+char P2Bank[5]="";
+char P3Bank[5]="";
+char P4Bank[5]="";
+char P5Bank[5]="";
 
 
 
@@ -493,8 +513,6 @@ int main(int argc, char *argv[])
  	//gtk_main();
 
 	fgets(SendBuf, sizeof(SendBuf), stdin);
-	//turnC+=1;
-	//NumPlayersC+=1;
 	l = strlen(SendBuf);
 	if (SendBuf[l-1] == '\n')
 	{   SendBuf[--l] = 0;
@@ -529,6 +547,7 @@ int main(int argc, char *argv[])
 	    }
 	    RecvBuf[n] = 0;
 	    printf("%s: Received response: %s\n", Program, RecvBuf);
+	    memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
             //END CONNECTION CODE
 		
 	   // TurnChoice
@@ -574,35 +593,32 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
+		
+
 	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 	   	 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
+
 		}
 
-		//*******************************************
+
+	
+		//
 		//SEND/REC ADDITIONAL INFO ABOUT OTHER PLAYERS
 		//send request for house cards
 		varHouseCards();
+		length=sizeof(HouseCards)-1;//calculate length of array
+		memset(HouseCards, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
-	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
-	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
+		{ printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
 	    	{   FatalError("writing to socket failed");
@@ -610,32 +626,37 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(HouseCards,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
+		
 		 
 	        //send request for current turn
 	        varTurn();
+		length=sizeof(Turn)-1;//calculate length of array
+		memset(Turn, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -644,32 +665,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(Turn,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 		 
 		//send request for number of players
 		varNumPlayers();
+		length=sizeof(NumPlayers)-1;//calculate length of array
+		memset(NumPlayers, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -678,32 +703,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(NumPlayers,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 		 
 		//send request for pot
 		varPot();
+		length=sizeof(Pot)-1;//calculate length of array
+		memset(Pot, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -712,32 +741,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(Pot,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 	       
 		//player info
 		var1Bet();
+		length=sizeof(P1Bet)-1;//calculate length of array
+		memset(P1Bet, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -746,31 +779,35 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P1Bet,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 		var2Bet();
+		length=sizeof(P2Bet)-1;//calculate length of array
+		memset(P2Bet, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -779,33 +816,37 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P2Bet,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
  
 		 
 		var3Bet();
-		x = strlen(SendBuf);
+		length=sizeof(P3Bet)-1;//calculate length of array
+		memset(P3Bet, 0, length); //set all bytes in array to 0
+	        x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -814,32 +855,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P3Bet,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 		 
 		var4Bet();
+		length=sizeof(P4Bet)-1;//calculate length of array
+		memset(P4Bet, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -848,33 +893,37 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P4Bet,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 		
 
 		var5Bet();
+		length=sizeof(P5Bet)-1;//calculate length of array
+		memset(P5Bet, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -883,32 +932,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P5Bet,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 
 		var1Bank();
+		length=sizeof(P1Bank)-1;//calculate length of array
+		memset(P1Bank, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -917,32 +970,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P1Bank,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 		 
 		var2Bank();
+		length=sizeof(P2Bank)-1;//calculate length of array
+		memset(P2Bank, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -951,32 +1008,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P2Bank,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 
 		var3Bank();
+		length=sizeof(P3Bank)-1;//calculate length of array
+		memset(P3Bank, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -985,32 +1046,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P3Bank,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 
 		var4Bank();
+		length=sizeof(P4Bank)-1;//calculate length of array
+		memset(P4Bank, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -1019,32 +1084,36 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P4Bank,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
 
 
 		var5Bank();
+		length=sizeof(P5Bank)-1;//calculate length of array
+		memset(P5Bank, 0, length); //set all bytes in array to 0
 		x = strlen(SendBuf);
 	        if (SendBuf[x-1] == '\n')
 		{   SendBuf[--x] = 0;
 		}
 		if (x) 
-		{   SocketFD = socket(AF_INET, SOCK_STREAM, 0);
-		    if (SocketFD < 0)
-	 	   {   FatalError("socket creation failed");
-	 	   }
-	   	 printf("%s: Connecting to the server at port %d...\n",
-				Program, PortNo);
+		{  // SocketFD = socket(AF_INET, SOCK_STREAM, 0);
+		   // if (SocketFD < 0)
+	 	  // {   FatalError("socket creation failed");
+	 	  // }
+	   	 //printf("%s: Connecting to the server at port %d...\n",
+			//	Program, PortNo);
 	    	//establish connection
-	    	if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
-				sizeof(ServerAddress)) < 0)
-	   	 {   FatalError("connecting to server failed");
-	   	 }
+	    	//if (connect(SocketFD, (struct sockaddr*)&ServerAddress,
+		//		sizeof(ServerAddress)) < 0)
+	   	// {   FatalError("connecting to server failed");
+	   	// }
 	   	 printf("%s: Sending message '%s'...\n", Program, SendBuf);
 		z = write(SocketFD, SendBuf, x);
 	   	 if (z < 0)
@@ -1053,15 +1122,18 @@ int main(int argc, char *argv[])
 		#ifdef DEBUG
 	    	printf("%s: Waiting for response...\n", Program);
 		#endif
-	  	  z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
 		 if (z < 0) 
 	   	 {   FatalError("reading from socket failed");
 	   	 }
 	    	RecvBuf[z] = 0;
 	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(P5Bank,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
+		}
 
             	//END CONNECTION CODE
-		}
+		
 	}
  	    
 #ifdef DEBUG
