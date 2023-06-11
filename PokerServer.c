@@ -285,30 +285,34 @@ void ProcessRequest(		/* process a request by a client */
     {
 	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
 	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
-	
+	char *placeholderP1=CardsPlayer(P1);//char ptr that holds the house cards
+	char *placeholderP2=CardsPlayer(P2);//char ptr that holds the house cards
+	char *placeholderP3=CardsPlayer(P3);//char ptr that holds the house cards
+	char *placeholderP4=CardsPlayer(P4);//char ptr that holds the house cards
+	char *placeholderP5=CardsPlayer(P5);//char ptr that holds the house cards
 	if (NumPlayers==1)
 	{	
-	    char *placeholderP=CardsPlayer(P1);//char ptr that holds the house cards 
+	   
 	    strcat(ClientOutput,placeholderP1); //copies char of housecards to output array  
 	}
 	else if (NumPlayers==2)
 	{	
-	    char *placeholderP=CardsPlayer(P2);//char ptr that holds the house cards 
+	   
 	    strcat(ClientOutput,placeholderP2); //copies char of housecards to output array  
 	}
 	else if (NumPlayers==3)
 	{	
-	    char *placeholderP=CardsPlayer(P3);//char ptr that holds the house cards 
+	    
 	    strcat(ClientOutput,placeholderP3); //copies char of housecards to output array  
 	}
 	else if (NumPlayers==4)
 	{	
-	    char *placeholderP=CardsPlayer(P4);//char ptr that holds the house cards 
+	    
 	    strcat(ClientOutput,placeholderP4); //copies char of housecards to output array  
 	}
 	else if (NumPlayers==5)
 	{	
-	    char *placeholderP=CardsPlayer(P5);//char ptr that holds the house cards 
+	    
 	    strcat(ClientOutput,placeholderP5); //copies char of housecards to output array  
 	}
 	//sends common cards array to client
