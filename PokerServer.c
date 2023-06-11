@@ -194,7 +194,7 @@ void ProcessRequest(		/* process a request by a client */
     if (0 == strcmp(RecvBuf, "POKER"))
     {   
 	NumPlayers+=1;
-	char *placeholderP="";
+	//char *placeholderP="";
 	
 	if(NumPlayers==1)
 	{
