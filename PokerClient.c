@@ -74,6 +74,12 @@ void varHouseCards()
 	strncpy(SendBuf,var,10);
 }
 
+void varPlayerHand()
+{
+	char *var="PHAND";
+	strncpy(SendBuf,var,10);
+}
+
 void varNumPlayers()
 {
 	char *var="PNUM";
@@ -549,6 +555,32 @@ char P5Bank[5]="";
 	    printf("%s: Received response: %s\n", Program, RecvBuf);
 	    memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
             //END CONNECTION CODE
+	 
+	 	varPlayerHand();
+		length=sizeof(HouseCards)-1;//calculate length of array
+		memset(HouseCards, 0, length); //set all bytes in array to 0
+		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{ printf("%s: Sending message '%s'...\n", Program, SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(HouseCards,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
+		}
 		
 	   // TurnChoice
 	while(0 != strcmp("FOLD", SendBuf))
