@@ -453,7 +453,7 @@ int main(int argc, char *argv[])
 
 char Turn[5]="";
 char HouseCards[25]="";
-char PlayerHand[10]="";
+char PlayerHand[15]="";
 char NumPlayers[5]="";
 char Pot[10]="";
 char P1Bet[5]="";
@@ -669,6 +669,34 @@ char P5Bank[5]="";
 		strcat(HouseCards,RecvBuf);
 		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
 		}
+
+		//send player hand 
+	 	varPlayerHand();
+		length=sizeof(PlayerHand)-1;//calculate length of array
+		memset(PlayerHand, 0, length); //set all bytes in array to 0
+		x = strlen(SendBuf);
+	        if (SendBuf[x-1] == '\n')
+		{   SendBuf[--x] = 0;
+		}
+		if (x) 
+		{ printf("%s: Sending message '%s'...\n", Program, SendBuf);
+		z = write(SocketFD, SendBuf, x);
+	   	 if (z < 0)
+	    	{   FatalError("writing to socket failed");
+	    	}
+		#ifdef DEBUG
+	    	printf("%s: Waiting for response...\n", Program);
+		#endif
+		z = read(SocketFD, RecvBuf, sizeof(RecvBuf)-1);
+		 if (z < 0) 
+	   	 {   FatalError("reading from socket failed");
+	   	 }
+	    	RecvBuf[z] = 0;
+	    	printf("%s: Received response: %s\n", Program, RecvBuf);
+		strcat(PlayerHand,RecvBuf);
+		memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
+		}
+
 		
 		 
 	        //send request for current turn
