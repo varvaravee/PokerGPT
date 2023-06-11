@@ -28,11 +28,11 @@ void varShut() //closing server
 	char *var="SHUTDOWN";
 	strncpy(SendBuf,var,10);
 }
-void varGarbage() //send buff test 
-{
-	char *var="GARBAGE";
-	strncpy(SendBuf,var,10);
-}
+//void varGarbage() //send buff test 
+//{
+//	char *var="GARBAGE";
+//	strncpy(SendBuf,var,10);
+//}
 //turn menu button functions
 void varCall()
 {
@@ -555,7 +555,7 @@ char P5Bank[5]="";
 	    printf("%s: Received response: %s\n", Program, RecvBuf);
 	    memset(RecvBuf,0,sizeof(RecvBuf)); //clear receive buffer
             //END CONNECTION CODE
-	 
+	 	//send player hand 
 	 	varPlayerHand();
 		length=sizeof(HouseCards)-1;//calculate length of array
 		memset(HouseCards, 0, length); //set all bytes in array to 0
