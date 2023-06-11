@@ -281,6 +281,44 @@ void ProcessRequest(		/* process a request by a client */
 
 
     }	
+    else if (0 == strcmp(RecvBuf, "PHAND"))
+    {
+	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
+	memset(SendBuf,0,sizeof(SendBuf)); //clear send buffer
+	
+	if (NumPlayers==1)
+	{	
+	    char *placeholderP=CardsPlayer(P1);//char ptr that holds the house cards 
+	    strcat(ClientOutput,placeholderP1); //copies char of housecards to output array  
+	}
+	else if (NumPlayers==2)
+	{	
+	    char *placeholderP=CardsPlayer(P2);//char ptr that holds the house cards 
+	    strcat(ClientOutput,placeholderP2); //copies char of housecards to output array  
+	}
+	else if (NumPlayers==3)
+	{	
+	    char *placeholderP=CardsPlayer(P3);//char ptr that holds the house cards 
+	    strcat(ClientOutput,placeholderP3); //copies char of housecards to output array  
+	}
+	else if (NumPlayers==4)
+	{	
+	    char *placeholderP=CardsPlayer(P4);//char ptr that holds the house cards 
+	    strcat(ClientOutput,placeholderP4); //copies char of housecards to output array  
+	}
+	else if (NumPlayers==5)
+	{	
+	    char *placeholderP=CardsPlayer(P5);//char ptr that holds the house cards 
+	    strcat(ClientOutput,placeholderP5); //copies char of housecards to output array  
+	}
+	//sends common cards array to client
+	strncpy(SendBuf, "\nPlayer's Hand:  \n", sizeof(SendBuf)-1);
+	SendBuf[sizeof(SendBuf)-1] = 0;
+	strncat(SendBuf, ClientOutput, sizeof(SendBuf)-1-strlen(SendBuf));    
+	    
+	    
+	    
+    }
     else if (0 == strcmp(RecvBuf, "HCARDS"))
     {
 	//memset(SendBuf,0,sizeof(RecvBuf)); //clear send buffer
